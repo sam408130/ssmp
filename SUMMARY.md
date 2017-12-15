@@ -2,4 +2,5 @@
 
 * [小新美铺](README.md)
 * [小程序上线第一天问题反馈](chapter1.md)
+* [day 2](xiao-cheng-xu-shang-xian-di-er-tian.md)
 
