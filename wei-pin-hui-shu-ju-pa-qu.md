@@ -54,3 +54,60 @@
             "UNIQUE KEY `v_spu_id` (`v_spu_id`)"
             ") ENGINE=InnoDB".format(config.vip_category_list_table)
         )
+        
+
+其中content存放的原始json数据，目前只爬取了第一页的120个数据。商品的唯一id是v_spu_id, 同款不同颜色会有不同的mid和product_id，这一点要注意。
+
+## 商品详情
+
+因为网页上的不同颜色被当做了不同商品，因此商品数据是从app爬取的，app返回数据结构比较杂乱，保存形式如下：
+
+唯品会app商品详情页的数据是同个body中传入不同的方法来获取的：
+
+```
+    def start_requests(self):
+        command = "SELECT * FROM {0} WHERE `finished` = \'{1}\' ".format(config.vip_category_list_table, 0)
+        data = self.sql.query(command)
+        for i, item in enumerate(data):
+            utils.log('parse item:%s' % (item[2]))
+            timestamp = int(time.time()*1000)
+            formData = [{
+                "method": "getProductSlide",
+                "params": {
+                    "page": "product-%s-%s.html" % (item[10], item[1]),
+                    "query": ""
+                },
+                "id": timestamp,
+                "jsonrpc": "2.0"
+            },{
+                "method": "getProductMultiColor",
+                "params": {
+                    "page": "product-%s-%s.html" % (item[10], item[1]),
+                    "query": ""
+                },
+                "id": timestamp+1,
+                "jsonrpc": "2.0"
+            },{
+                "method": "getProductSize",
+                "params": {
+                    "page": "product-%s-%s.html" % (item[10], item[1]),
+                    "query": ""
+                },
+                "id": timestamp+2,
+                "jsonrpc": "2.0"
+            }]
+            formdata = json.dumps(formData)
+            yield FormRequest(
+                url = 'https://m.vip.com/server.html?rpc',
+                body = formdata,
+                headers = self.headers,
+                callback = self.get_item,
+                meta = {
+                    'v_spu_id': item[9],
+                    'brand_id': item[10]
+                }
+            )
+```
+如上面代码formData是post请求中body的内容，接口返回数据也是一个数组，分别是请求方法对应的数据。所以我将上面三个方法获取原始数据分别存在了相应字段中：
+![](/assets/屏幕快照 2018-01-03 下午3.08.18.png)
+
