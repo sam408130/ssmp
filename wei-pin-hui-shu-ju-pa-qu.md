@@ -25,3 +25,32 @@
 
 ![](/assets/屏幕快照 2018-01-03 下午12.04.12.png)
 
+品牌列表的数据存放在vip_brand_item_list中（测试环境叫vip_category_list），表结构如下：
+
+
+        command = (
+            "CREATE TABLE IF NOT EXISTS {} ("
+            "`id` INT(8) NOT NULL AUTO_INCREMENT,"
+            "`product_id` BIGINT NOT NULL,"
+            "`product_name` TEXT NOT NULL,"
+            "`vipshop_price` INT(10),"
+            "`market_price` INT(10),"
+            "`vip_discount` CHAR(10),"
+            "`sku_id` BIGINT,"
+            "`small_image` TEXT,"
+            "`state` INT(2) NOT NULL,"
+            "`v_spu_id` BIGINT NOT NULL,"
+            "`brand_id` BIGINT NOT NULL,"
+            "`brand_name` TEXT,"
+            "`brand_store_logo` TEXT,"
+            "`brand_store_sn` BIGINT,"
+            "`sell_time_to` DATETIME,"
+            "`sell_time_from` DATETIME,"
+            "`mid` BIGINT NOT NULL,"
+            "`create_time` DATETIME NOT NULL,"
+            "`content` TEXT,"
+            "`finished` INT(2),"
+            "PRIMARY KEY(id),"
+            "UNIQUE KEY `v_spu_id` (`v_spu_id`)"
+            ") ENGINE=InnoDB".format(config.vip_category_list_table)
+        )
